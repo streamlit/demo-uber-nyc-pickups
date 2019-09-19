@@ -20,8 +20,6 @@ import pandas as pd
 import numpy as np
 import altair as alt
 
-import sys
-
 DATE_TIME = "date/time"
 DATA_URL = (
     "http://s3-us-west-2.amazonaws.com/streamlit-demo-data/uber-raw-data-sep14.csv.gz"
@@ -29,13 +27,13 @@ DATA_URL = (
 
 st.title("Uber Pickups in New York City")
 st.markdown(
-    (
-        "This is a demo of a Streamlit app that shows the Uber pickups"
-        " time and space distribution in New York City. Use the slider in the sidebar to the"
-        " left to pick a specific hour and look at the charts below."
-    )
-)
+"""
+This is a demo of a Streamlit app that shows the Uber pickups
+geographical distribution in New York City. Use the slider
+to pick a specific hour and look at how the charts change.
 
+[See source code](https://github.com/streamlit/streamlit/blob/develop/examples/uber.py)
+""")
 
 @st.cache(persist=True)
 def load_data(nrows):
@@ -48,33 +46,7 @@ def load_data(nrows):
 
 data = load_data(100000)
 
-hour = st.sidebar.slider("Hour to look at", 0, 23)
-
-st.sidebar.subheader("Pickups by hour")
-
-chart_data = pd.DataFrame(
-    {
-        "hour": range(24),
-        "pickups": np.histogram(data[DATE_TIME].dt.hour, bins=24, range=(0, 24))[0],
-    }
-)
-
-chart = (
-    alt.Chart(chart_data, height=120)
-    .mark_area()
-    .encode(alt.X("hour:Q", scale=alt.Scale(nice=False)), alt.Y("pickups:Q"))
-)
-selected_frame_df = pd.DataFrame({"selected_frame": [hour]})
-vline = (
-    alt.Chart(selected_frame_df)
-    .mark_rule(color="red")
-    .encode(alt.X("selected_frame:Q", axis=None))
-)
-st.sidebar.altair_chart(alt.layer(chart, vline))
-
-st.sidebar.markdown(
-    "[See source code](https://github.com/streamlit/streamlit/blob/develop/examples/uber.py)"
-)
+hour = st.slider("Hour to look at", 0, 23)
 
 data = data[data[DATE_TIME].dt.hour == hour]
 
@@ -108,19 +80,21 @@ hist = np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
 chart_data = pd.DataFrame(
     {
         "minute": range(60),
-        "pickups": np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[
-            0
-        ],
+        "pickups": np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
+            #"minute": filtered[DATE_TIME].dt.minute,
     }
 )
 chart = (
-    alt.Chart(chart_data, height=120)
-    .mark_bar()
-    .encode(alt.X("minute:Q", scale=alt.Scale(nice=False)), alt.Y("pickups:Q"))
+    alt.Chart(chart_data)
+    .mark_area()
+    .encode(
+        x=alt.X("minute:Q", scale=alt.Scale(nice=False)),
+        y=alt.Y("pickups:Q")
+    )
 )
 st.altair_chart(chart)
 
-st.markdown("---")
 if st.checkbox("Show raw data", False):
-    st.subheader("Raw data")
+    st.subheader("Raw data by minute between %i:00 and %i:00" % (hour, (hour + 1) % 24))
     st.write(data)
+
