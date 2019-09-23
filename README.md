@@ -5,7 +5,7 @@ The complete demo is [implemented in Python](https://github.com/streamlit/demo-u
 
 ## How to run this demo
 ```
-pip install streamlit altair
+pip install --upgrade streamlit altair
 streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/app.py
 ```
 
