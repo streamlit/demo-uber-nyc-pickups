@@ -9,8 +9,6 @@ pip install streamlit altair
 streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/app.py
 ```
 
-!! **NOTE: This demo requires version 0.46 of Streamlit which has not yet been released!**
-
 ### Questions? Comments?
 
 Please ask in the [Streamlit community](https://discuss.streamlit.io).
