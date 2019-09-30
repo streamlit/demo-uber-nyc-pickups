@@ -77,22 +77,16 @@ filtered = data[
     (data[DATE_TIME].dt.hour >= hour) & (data[DATE_TIME].dt.hour < (hour + 1))
 ]
 hist = np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
-chart_data = pd.DataFrame(
-    {
-        "minute": range(60),
-        "pickups": np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
-            #"minute": filtered[DATE_TIME].dt.minute,
-    }
-)
-chart = (
-    alt.Chart(chart_data)
-    .mark_area()
-    .encode(
+chart_data = pd.DataFrame({"minute": range(60), "pickups": hist})
+st.write(alt.Chart(chart_data, height=150)
+    .mark_area(
+        interpolate='step-after',
+        line=True
+    ).encode(
         x=alt.X("minute:Q", scale=alt.Scale(nice=False)),
-        y=alt.Y("pickups:Q")
-    )
-)
-st.altair_chart(chart)
+        y=alt.Y("pickups:Q"),
+        tooltip=['minute', 'pickups']
+    ))
 
 if st.checkbox("Show raw data", False):
     st.subheader("Raw data by minute between %i:00 and %i:00" % (hour, (hour + 1) % 24))
