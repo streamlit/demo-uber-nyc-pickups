@@ -19,6 +19,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import altair as alt
+import pydeck as pdk
 
 DATE_TIME = "date/time"
 DATA_URL = (
@@ -52,25 +53,28 @@ data = data[data[DATE_TIME].dt.hour == hour]
 
 st.subheader("Geo data between %i:00 and %i:00" % (hour, (hour + 1) % 24))
 midpoint = (np.average(data["lat"]), np.average(data["lon"]))
-st.deck_gl_chart(
-    viewport={
+
+st.write(pdk.Deck(
+    map_style="mapbox://styles/mapbox/light-v9",
+    initial_view_state={
         "latitude": midpoint[0],
         "longitude": midpoint[1],
         "zoom": 11,
         "pitch": 50,
     },
     layers=[
-        {
-            "type": "HexagonLayer",
-            "data": data,
-            "radius": 100,
-            "elevationScale": 4,
-            "elevationRange": [0, 1000],
-            "pickable": True,
-            "extruded": True,
-        }
+        pdk.Layer(
+            "HexagonLayer",
+            data=data,
+            get_position=["lon", "lat"],
+            radius=100,
+            elevation_scale=4,
+            elevation_range=[0, 1000],
+            pickable=True,
+            extruded=True,
+        ),
     ],
-)
+))
 
 st.subheader("Breakdown by minute between %i:00 and %i:00" % (hour, (hour + 1) % 24))
 filtered = data[
@@ -78,17 +82,16 @@ filtered = data[
 ]
 hist = np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
 chart_data = pd.DataFrame({"minute": range(60), "pickups": hist})
-st.write(alt.Chart(chart_data, height=150)
+
+st.altair_chart(alt.Chart(chart_data)
     .mark_area(
         interpolate='step-after',
-        line=True
     ).encode(
         x=alt.X("minute:Q", scale=alt.Scale(nice=False)),
         y=alt.Y("pickups:Q"),
         tooltip=['minute', 'pickups']
-    ))
+    ), use_container_width=True)
 
 if st.checkbox("Show raw data", False):
     st.subheader("Raw data by minute between %i:00 and %i:00" % (hour, (hour + 1) % 24))
     st.write(data)
-
