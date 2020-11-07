@@ -11,7 +11,7 @@ Check out the live app at [share.streamlit.io/streamlit/demo-uber-nyc-pickups](h
 ## Run this demo locally
 ```
 pip install --upgrade streamlit
-streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/app.py
+streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/streamlit_app.py.py
 ```
 
 ### Questions? Comments?
