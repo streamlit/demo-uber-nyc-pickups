@@ -1,7 +1,7 @@
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/streamlit/demo-uber-nyc-pickups/)
 
 # Streamlit Demo: Uber Pickups in New York City
-A [Streamlit](https://streamlit.io) demo [written in pure Python](https://github.com/streamlit/demo-uber-nyc-pickups/blob/master/app.py) to interactively visualize Uber pickups in New York City.
+A [Streamlit](https://streamlit.io) demo [written in pure Python](https://github.com/streamlit/demo-uber-nyc-pickups/blob/master/streamlit_app.py) to interactively visualize Uber pickups in New York City.
 
 ![Final App Animation](https://github.com/streamlit/streamlit/raw/develop/docs/_static/img/uber_horiz.gif "Final App Animation")
 
@@ -11,7 +11,7 @@ Check out the live app at [share.streamlit.io/streamlit/demo-uber-nyc-pickups](h
 ## Run this demo locally
 ```
 pip install --upgrade streamlit
-streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/streamlit_app.py.py
+streamlit run https://raw.githubusercontent.com/streamlit/demo-uber-nyc-pickups/master/streamlit_app.py
 ```
 
 ### Questions? Comments?
