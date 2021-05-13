@@ -22,7 +22,7 @@ import altair as alt
 import pydeck as pdk
 
 # SETTING PAGE CONFIG TO WIDE MODE
-st.beta_set_page_config(layout="wide")
+st.set_page_config(layout="wide")
 
 # LOADING DATA
 DATE_TIME = "date/time"
