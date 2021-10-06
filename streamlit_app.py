@@ -132,6 +132,6 @@ st.altair_chart(alt.Chart(chart_data)
         y=alt.Y("pickups:Q"),
         tooltip=['minute', 'pickups']
     ).configure_mark(
-        opacity=0.5,
+        opacity=0.2,
         color='red'
     ), use_container_width=True)
