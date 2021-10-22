@@ -66,7 +66,7 @@ def map(data, lat, lon, zoom):
     ))
 
 # LAYING OUT THE TOP SECTION OF THE APP
-row1_1, row1_2 = st.beta_columns((2,3))
+row1_1, row1_2 = st.columns((2,3))
 
 with row1_1:
     st.title("NYC Uber Ridesharing Data")
@@ -84,7 +84,7 @@ with row1_2:
 data = data[data[DATE_TIME].dt.hour == hour_selected]
 
 # LAYING OUT THE MIDDLE SECTION OF THE APP WITH THE MAPS
-row2_1, row2_2, row2_3, row2_4 = st.beta_columns((2,1,1,1))
+row2_1, row2_2, row2_3, row2_4 = st.columns((2,1,1,1))
 
 # SETTING THE ZOOM LOCATIONS FOR THE AIRPORTS
 la_guardia= [40.7900, -73.8700]
