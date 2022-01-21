@@ -26,13 +26,13 @@ st.set_page_config(layout="wide")
 
 # LOADING DATA
 DATE_TIME = "date/time"
-DATA_URL = (
-    "http://s3-us-west-2.amazonaws.com/streamlit-demo-data/uber-raw-data-sep14.csv.gz"
-)
+#DATA_URL = (
+#    "http://s3-us-west-2.amazonaws.com/streamlit-demo-data/uber-raw-data-sep14.csv.gz"
+#)
 
 @st.cache(persist=True)
 def load_data(nrows):
-    data = pd.read_csv(DATA_URL, nrows=nrows)
+    data = pd.read_csv("uber-raw-data-sep14.csv.gz", nrows=nrows)
     lowercase = lambda x: str(x).lower()
     data.rename(lowercase, axis="columns", inplace=True)
     data[DATE_TIME] = pd.to_datetime(data[DATE_TIME])
