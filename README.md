@@ -5,9 +5,6 @@ A [Streamlit](https://streamlit.io) demo [written in pure Python](https://github
 
 ![Final App Animation](https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/uber_demo.png "Uber demo")
 
-## View the live app
-Check out the live app at [share.streamlit.io/streamlit/demo-uber-nyc-pickups](https://share.streamlit.io/streamlit/demo-uber-nyc-pickups). This demo is hosted with Streamlit sharing - the best way to deploy, manage, and share your Streamlit apps. Get an invite at streamlit.io/sharing.
-
 ## Run this demo locally
 ```
 pip install --upgrade streamlit
