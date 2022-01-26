@@ -30,7 +30,7 @@ DATE_TIME = "date/time"
 #    "http://s3-us-west-2.amazonaws.com/streamlit-demo-data/uber-raw-data-sep14.csv.gz"
 #)
 
-@st.cache(persist=True)
+@st.experimental_memo
 def load_data(nrows):
     data = pd.read_csv("uber-raw-data-sep14.csv.gz", nrows=nrows)
     lowercase = lambda x: str(x).lower()
