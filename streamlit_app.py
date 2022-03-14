@@ -79,7 +79,7 @@ def filterdata(df, hour_selected):
 
 
 # CALCULATE MIDPOINT FOR GIVEN SET OF DATA
-@st.experimental_singleton
+@st.experimental_memo
 def mpoint(lat, lon):
     return (np.average(lat), np.average(lon))
 
