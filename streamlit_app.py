@@ -127,8 +127,7 @@ midpoint = mpoint(data["lat"], data["lon"])
 
 with row2_1:
     st.write(
-        "**All New York City from %i:00 and %i:00**"
-        % (hour_selected, (hour_selected + 1) % 24)
+        f"""**All New York City from {hour_selected}:00 and {(hour_selected + 1) % 24}:00**"""
     )
     map(filterdata(data, hour_selected), midpoint[0], midpoint[1], 11)
 
