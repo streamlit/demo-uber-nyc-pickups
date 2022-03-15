@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2018-2019 Streamlit Inc.
+# Copyright 2018-2022 Streamlit Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,49 +24,83 @@ import pydeck as pdk
 # SETTING PAGE CONFIG TO WIDE MODE
 st.set_page_config(layout="wide")
 
-# LOADING DATA
-DATE_TIME = "date/time"
-#DATA_URL = (
-#    "http://s3-us-west-2.amazonaws.com/streamlit-demo-data/uber-raw-data-sep14.csv.gz"
-#)
+# LOAD DATA ONCE
+@st.experimental_singleton
+def load_data():
+    data = pd.read_csv(
+        "uber-raw-data-sep14.csv.gz",
+        nrows=100000,  # approx. 10% of data
+        names=[
+            "date/time",
+            "lat",
+            "lon",
+        ],  # specify names directly since they don't change
+        skiprows=1,  # don't read header since names specified directly
+        usecols=[0, 1, 2],  # doesn't load last column, constant value "B02512"
+        parse_dates=[
+            "date/time"
+        ],  # set as datetime instead of converting after the fact
+    )
 
-@st.experimental_memo
-def load_data(nrows):
-    data = pd.read_csv("uber-raw-data-sep14.csv.gz", nrows=nrows)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis="columns", inplace=True)
-    data[DATE_TIME] = pd.to_datetime(data[DATE_TIME])
     return data
 
-data = load_data(100000)
 
-# CREATING FUNCTION FOR MAPS
-
+# FUNCTION FOR AIRPORT MAPS
 def map(data, lat, lon, zoom):
-    st.write(pdk.Deck(
-        map_style="mapbox://styles/mapbox/light-v9",
-        initial_view_state={
-            "latitude": lat,
-            "longitude": lon,
-            "zoom": zoom,
-            "pitch": 50,
-        },
-        layers=[
-            pdk.Layer(
-                "HexagonLayer",
-                data=data,
-                get_position=["lon", "lat"],
-                radius=100,
-                elevation_scale=4,
-                elevation_range=[0, 1000],
-                pickable=True,
-                extruded=True,
-            ),
-        ]
-    ))
+    st.write(
+        pdk.Deck(
+            map_style="mapbox://styles/mapbox/light-v9",
+            initial_view_state={
+                "latitude": lat,
+                "longitude": lon,
+                "zoom": zoom,
+                "pitch": 50,
+            },
+            layers=[
+                pdk.Layer(
+                    "HexagonLayer",
+                    data=data,
+                    get_position=["lon", "lat"],
+                    radius=100,
+                    elevation_scale=4,
+                    elevation_range=[0, 1000],
+                    pickable=True,
+                    extruded=True,
+                ),
+            ],
+        )
+    )
+
+
+# FILTER DATA FOR A SPECIFIC HOUR, CACHE
+@st.experimental_memo
+def filterdata(df, hour_selected):
+    return df[df["date/time"].dt.hour == hour_selected]
+
+
+# CALCULATE MIDPOINT FOR GIVEN SET OF DATA
+@st.experimental_memo
+def mpoint(lat, lon):
+    return (np.average(lat), np.average(lon))
+
+
+# FILTER DATA BY HOUR
+@st.experimental_memo
+def histdata(df, hr):
+    filtered = data[
+        (df["date/time"].dt.hour >= hr) & (df["date/time"].dt.hour < (hr + 1))
+    ]
+
+    hist = np.histogram(filtered["date/time"].dt.minute, bins=60, range=(0, 60))[0]
+
+    return pd.DataFrame({"minute": range(60), "pickups": hist})
+
+
+# STREAMLIT APP LAYOUT
+data = load_data()
 
 # LAYING OUT THE TOP SECTION OF THE APP
-row1_1, row1_2 = st.columns((2,3))
+row1_1, row1_2 = st.columns((2, 3))
 
 with row1_1:
     st.title("NYC Uber Ridesharing Data")
@@ -74,64 +108,59 @@ with row1_1:
 
 with row1_2:
     st.write(
-    """
+        """
     ##
     Examining how Uber pickups vary over time in New York City's and at its major regional airports.
     By sliding the slider on the left you can view different slices of time and explore different transportation trends.
-    """)
-
-# FILTERING DATA BY HOUR SELECTED
-data = data[data[DATE_TIME].dt.hour == hour_selected]
+    """
+    )
 
 # LAYING OUT THE MIDDLE SECTION OF THE APP WITH THE MAPS
-row2_1, row2_2, row2_3, row2_4 = st.columns((2,1,1,1))
+row2_1, row2_2, row2_3, row2_4 = st.columns((2, 1, 1, 1))
 
 # SETTING THE ZOOM LOCATIONS FOR THE AIRPORTS
-la_guardia= [40.7900, -73.8700]
+la_guardia = [40.7900, -73.8700]
 jfk = [40.6650, -73.7821]
 newark = [40.7090, -74.1805]
 zoom_level = 12
-midpoint = (np.average(data["lat"]), np.average(data["lon"]))
+midpoint = mpoint(data["lat"], data["lon"])
 
 with row2_1:
-    st.write("**All New York City from %i:00 and %i:00**" % (hour_selected, (hour_selected + 1) % 24))
-    map(data, midpoint[0], midpoint[1], 11)
+    st.write(
+        f"""**All New York City from {hour_selected}:00 and {(hour_selected + 1) % 24}:00**"""
+    )
+    map(filterdata(data, hour_selected), midpoint[0], midpoint[1], 11)
 
 with row2_2:
     st.write("**La Guardia Airport**")
-    map(data, la_guardia[0],la_guardia[1], zoom_level)
+    map(filterdata(data, hour_selected), la_guardia[0], la_guardia[1], zoom_level)
 
 with row2_3:
     st.write("**JFK Airport**")
-    map(data, jfk[0],jfk[1], zoom_level)
+    map(filterdata(data, hour_selected), jfk[0], jfk[1], zoom_level)
 
 with row2_4:
     st.write("**Newark Airport**")
-    map(data, newark[0],newark[1], zoom_level)
+    map(filterdata(data, hour_selected), newark[0], newark[1], zoom_level)
 
-# FILTERING DATA FOR THE HISTOGRAM
-filtered = data[
-    (data[DATE_TIME].dt.hour >= hour_selected) & (data[DATE_TIME].dt.hour < (hour_selected + 1))
-    ]
-
-hist = np.histogram(filtered[DATE_TIME].dt.minute, bins=60, range=(0, 60))[0]
-
-chart_data = pd.DataFrame({"minute": range(60), "pickups": hist})
+# CALCULATING DATA FOR THE HISTOGRAM
+chart_data = histdata(data, hour_selected)
 
 # LAYING OUT THE HISTOGRAM SECTION
+st.write(
+    f"""**Breakdown of rides per minute between {hour_selected}:00 and {(hour_selected + 1) % 24}:00**"""
+)
 
-st.write("")
-
-st.write("**Breakdown of rides per minute between %i:00 and %i:00**" % (hour_selected, (hour_selected + 1) % 24))
-
-st.altair_chart(alt.Chart(chart_data)
+st.altair_chart(
+    alt.Chart(chart_data)
     .mark_area(
-        interpolate='step-after',
-    ).encode(
+        interpolate="step-after",
+    )
+    .encode(
         x=alt.X("minute:Q", scale=alt.Scale(nice=False)),
         y=alt.Y("pickups:Q"),
-        tooltip=['minute', 'pickups']
-    ).configure_mark(
-        opacity=0.2,
-        color='red'
-    ), use_container_width=True)
+        tooltip=["minute", "pickups"],
+    )
+    .configure_mark(opacity=0.2, color="red"),
+    use_container_width=True,
+)
