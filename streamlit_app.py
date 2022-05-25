@@ -109,11 +109,18 @@ if "pickup_hour" not in st.session_state:
     except KeyError:
         pass
 
+
+def update_query_params():
+    hour_selected = st.session_state["pickup_hour"]
+    st.experimental_set_query_params(pickup_hour=hour_selected)
+
+
 with row1_1:
     st.title("NYC Uber Ridesharing Data")
-    hour_selected = st.slider("Select hour of pickup", 0, 23, key="pickup_hour")
+    hour_selected = st.slider(
+        "Select hour of pickup", 0, 23, key="pickup_hour", on_change=update_query_params
+    )
 
-st.experimental_set_query_params(pickup_hour=hour_selected)
 
 with row1_2:
     st.write(
