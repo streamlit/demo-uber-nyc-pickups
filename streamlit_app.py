@@ -103,9 +103,11 @@ data = load_data()
 row1_1, row1_2 = st.columns((2, 3))
 
 if "pickup_hour" not in st.session_state:
-    st.session_state["pickup_hour"] = int(
-        st.experimental_get_query_params().get("pickup_hour", [0])[0]
-    )
+    try:
+        pickup_hour = int(st.experimental_get_query_params()["pickup_hour"][0])
+        st.session_state["pickup_hour"] = pickup_hour
+    except KeyError:
+        pass
 
 with row1_1:
     st.title("NYC Uber Ridesharing Data")
