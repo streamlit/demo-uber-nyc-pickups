@@ -15,11 +15,11 @@
 
 """An example of showing geographic data."""
 
-import streamlit as st
-import pandas as pd
-import numpy as np
 import altair as alt
+import numpy as np
+import pandas as pd
 import pydeck as pdk
+import streamlit as st
 
 # SETTING PAGE CONFIG TO WIDE MODE AND ADDING A TITLE AND FAVICON
 st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon=":taxi:")
@@ -102,9 +102,16 @@ data = load_data()
 # LAYING OUT THE TOP SECTION OF THE APP
 row1_1, row1_2 = st.columns((2, 3))
 
+if "pickup_hour" not in st.session_state:
+    st.session_state["pickup_hour"] = int(
+        st.experimental_get_query_params().get("pickup_hour", [0])[0]
+    )
+
 with row1_1:
     st.title("NYC Uber Ridesharing Data")
-    hour_selected = st.slider("Select hour of pickup", 0, 23)
+    hour_selected = st.slider("Select hour of pickup", 0, 23, key="pickup_hour")
+
+st.experimental_set_query_params(pickup_hour=hour_selected)
 
 with row1_2:
     st.write(
