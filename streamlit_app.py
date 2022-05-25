@@ -102,10 +102,11 @@ data = load_data()
 # LAYING OUT THE TOP SECTION OF THE APP
 row1_1, row1_2 = st.columns((2, 3))
 
-if "pickup_hour" not in st.session_state:
+if not st.session_state.get("url_synced", False):
     try:
         pickup_hour = int(st.experimental_get_query_params()["pickup_hour"][0])
         st.session_state["pickup_hour"] = pickup_hour
+        st.session_state["url_synced"] = True
     except KeyError:
         pass
 
