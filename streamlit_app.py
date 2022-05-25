@@ -102,6 +102,7 @@ data = load_data()
 # LAYING OUT THE TOP SECTION OF THE APP
 row1_1, row1_2 = st.columns((2, 3))
 
+# SEE IF THERE'S A QUERY PARAM IN THE URL (e.g. ?pickup_hour=2)
 if not st.session_state.get("url_synced", False):
     try:
         pickup_hour = int(st.experimental_get_query_params()["pickup_hour"][0])
@@ -110,7 +111,7 @@ if not st.session_state.get("url_synced", False):
     except KeyError:
         pass
 
-
+# IF THE SLIDER CHANGES, UPDATE THE QUERY PARAM
 def update_query_params():
     hour_selected = st.session_state["pickup_hour"]
     st.experimental_set_query_params(pickup_hour=hour_selected)
