@@ -103,6 +103,8 @@ data = load_data()
 row1_1, row1_2 = st.columns((2, 3))
 
 # SEE IF THERE'S A QUERY PARAM IN THE URL (e.g. ?pickup_hour=2)
+# THIS ALLOWS YOU TO PASS A STATEFUL URL TO SOMEONE WITH A SPECIFIC HOUR SELECTED,
+# E.G. https://share.streamlit.io/streamlit/demo-uber-nyc-pickups/main?pickup_hour=2
 if not st.session_state.get("url_synced", False):
     try:
         pickup_hour = int(st.experimental_get_query_params()["pickup_hour"][0])
