@@ -26,7 +26,7 @@ st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon="
 
 
 # LOAD DATA ONCE
-@st.experimental_singleton
+@st.cache_resource
 def load_data():
     data = pd.read_csv(
         "https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/uber-raw-data-sep14.csv.gz",
@@ -74,19 +74,19 @@ def map(data, lat, lon, zoom):
 
 
 # FILTER DATA FOR A SPECIFIC HOUR, CACHE
-@st.experimental_memo
+@st.cache_data
 def filterdata(df, hour_selected):
     return df[df["date/time"].dt.hour == hour_selected]
 
 
 # CALCULATE MIDPOINT FOR GIVEN SET OF DATA
-@st.experimental_memo
+@st.cache_data
 def mpoint(lat, lon):
     return (np.average(lat), np.average(lon))
 
 
 # FILTER DATA BY HOUR
-@st.experimental_memo
+@st.cache_data
 def histdata(df, hr):
     filtered = data[
         (df["date/time"].dt.hour >= hr) & (df["date/time"].dt.hour < (hr + 1))
