@@ -15,6 +15,8 @@
 
 """An example of showing geographic data."""
 
+import os
+
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -24,11 +26,16 @@ import streamlit as st
 # SETTING PAGE CONFIG TO WIDE MODE AND ADDING A TITLE AND FAVICON
 st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon=":taxi:")
 
+
 # LOAD DATA ONCE
-@st.experimental_singleton
+@st.cache_resource
 def load_data():
+    path = "uber-raw-data-sep14.csv.gz"
+    if not os.path.isfile(path):
+        path = f"https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/{path}"
+
     data = pd.read_csv(
-        "uber-raw-data-sep14.csv.gz",
+        path,
         nrows=100000,  # approx. 10% of data
         names=[
             "date/time",
@@ -73,19 +80,19 @@ def map(data, lat, lon, zoom):
 
 
 # FILTER DATA FOR A SPECIFIC HOUR, CACHE
-@st.experimental_memo
+@st.cache_data
 def filterdata(df, hour_selected):
     return df[df["date/time"].dt.hour == hour_selected]
 
 
 # CALCULATE MIDPOINT FOR GIVEN SET OF DATA
-@st.experimental_memo
+@st.cache_data
 def mpoint(lat, lon):
     return (np.average(lat), np.average(lon))
 
 
 # FILTER DATA BY HOUR
-@st.experimental_memo
+@st.cache_data
 def histdata(df, hr):
     filtered = data[
         (df["date/time"].dt.hour >= hr) & (df["date/time"].dt.hour < (hr + 1))
@@ -112,6 +119,7 @@ if not st.session_state.get("url_synced", False):
         st.session_state["url_synced"] = True
     except KeyError:
         pass
+
 
 # IF THE SLIDER CHANGES, UPDATE THE QUERY PARAM
 def update_query_params():
