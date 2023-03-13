@@ -15,6 +15,8 @@
 
 """An example of showing geographic data."""
 
+import os
+
 import altair as alt
 import numpy as np
 import pandas as pd
@@ -28,8 +30,12 @@ st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon="
 # LOAD DATA ONCE
 @st.cache_resource
 def load_data():
+    path = "uber-raw-data-sep14.csv.gz"
+    if not os.path.isfile(path):
+        path = f"https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/{path}"
+
     data = pd.read_csv(
-        "https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/uber-raw-data-sep14.csv.gz",
+        path,
         nrows=100000,  # approx. 10% of data
         names=[
             "date/time",
