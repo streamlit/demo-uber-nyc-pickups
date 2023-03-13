@@ -24,11 +24,12 @@ import streamlit as st
 # SETTING PAGE CONFIG TO WIDE MODE AND ADDING A TITLE AND FAVICON
 st.set_page_config(layout="wide", page_title="NYC Ridesharing Demo", page_icon=":taxi:")
 
+
 # LOAD DATA ONCE
 @st.experimental_singleton
 def load_data():
     data = pd.read_csv(
-        "uber-raw-data-sep14.csv.gz",
+        "https://github.com/streamlit/demo-uber-nyc-pickups/raw/main/uber-raw-data-sep14.csv.gz",
         nrows=100000,  # approx. 10% of data
         names=[
             "date/time",
@@ -112,6 +113,7 @@ if not st.session_state.get("url_synced", False):
         st.session_state["url_synced"] = True
     except KeyError:
         pass
+
 
 # IF THE SLIDER CHANGES, UPDATE THE QUERY PARAM
 def update_query_params():
