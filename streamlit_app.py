@@ -124,7 +124,7 @@ if not st.session_state.get("url_synced", False):
 # IF THE SLIDER CHANGES, UPDATE THE QUERY PARAM
 def update_query_params():
     hour_selected = st.session_state["pickup_hour"]
-    st.experimental_set_query_params(pickup_hour=hour_selected)
+    st.query_params["pickup_hour"] = hour_selected
 
 
 with row1_1:

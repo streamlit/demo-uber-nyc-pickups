@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+streamlit = "==1.20.0"
+pydeck = "==0.7.1"
+protobuf = "==3.19.5"
+
+[dev-packages]
+
+[requires]
+python_version = "3.11"
+python_full_version = "3.11.2"
